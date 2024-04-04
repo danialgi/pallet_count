@@ -27,7 +27,7 @@ st.markdown("#")
 st.header("Pallet File")
 pallet_file = st.file_uploader(".xlsx file",type=['xlsx'])
 df_pallet= pd.read_excel(pallet_file, sheet_name="Final")
-df_pallet = df_pallet[['Row Labels', 'Qty per pallet']].copy()
+df_pallet = df_pallet[['Row Labels', 'Qty per pallet','Qty per drawer']].copy()
 st.write("UPLOAD SUCCESS")
 #df_pallet
 
@@ -39,7 +39,7 @@ for i in range(num_rows):
     cell_value = df_wms.iat[i, 0]
     dfq[i] = df_pallet[df_pallet['Row Labels'] == cell_value]
     if dfq[i].empty:
-        dfq[i] = pd.DataFrame({'Row Labels': [None], 'Qty per pallet': [None]})
+        dfq[i] = pd.DataFrame({'Row Labels': [None], 'Qty per pallet': [None],  'Qty per drawer': [None]})
 
 
 dfq_con = pd.concat(dfq.values(), ignore_index=True)
@@ -48,7 +48,9 @@ dfq_con = pd.concat(dfq.values(), ignore_index=True)
 wms_pallet= pd.concat([df_wms, dfq_con], axis=1)
 wms_pallet = wms_pallet.drop('Row Labels', axis=1)
 wms_pallet["Pallet Count"]=wms_pallet[10]/wms_pallet["Qty per pallet"]
+wms_pallet["Drawer Count"]=wms_pallet[10]/wms_pallet["Qty per drawer"]
 wms_pallet["Pallet Count"] = np.ceil(wms_pallet["Pallet Count"])
+wms_pallet["Drawer Count"] = np.ceil(wms_pallet["Drawer Count"])
 wms_pallet.rename(columns={5: 'Product', 7: 'Product Name', 10: 'Total'}, inplace=True)
 wms_pallet
 
