@@ -54,16 +54,27 @@ wms_pallet["Drawer Count"] = np.ceil(wms_pallet["Drawer Count"])
 wms_pallet.rename(columns={5: 'Product', 7: 'Product Name', 10: 'Total'}, inplace=True)
 wms_pallet
 
-@st.cache_data
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+from io import BytesIO
 
-csv = convert_df(wms_pallet)
+# Function to write DataFrames to an Excel file in memory
+def dfs_to_excel(df_list, sheet_list):
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        for dataframe, sheet in zip(df_list, sheet_list):
+            dataframe.to_excel(writer, sheet_name=sheet, index=False)
+    output.seek(0)
+    return output
 
+df_list = [wms_pallet]
+sheet_list = ['Sheet1']
+
+# Convert DataFrames to Excel in memory
+excel_file = dfs_to_excel(df_list, sheet_list)
+
+# Streamlit download button
 st.download_button(
-    label="Download",
-    data=csv,
-    file_name='Pallet_Count.csv',
-    mime='text/csv',
+    label="Download Excel file",
+    data=excel_file,
+    file_name="Kimma_Billing.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
