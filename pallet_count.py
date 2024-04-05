@@ -8,6 +8,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from natsort import natsort_keygen
+from datetime import datetime
+
+today_date = datetime.now().strftime('%Y-%m-%d')
 
 st.set_page_config(page_title="Pallet Count", page_icon="🚚", layout="wide")
 
@@ -75,6 +78,6 @@ excel_file = dfs_to_excel(df_list, sheet_list)
 st.download_button(
     label="Download Excel file",
     data=excel_file,
-    file_name="Pallet_Count.xlsx",
+    file_name=f"Pallet_Count_{today_date}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
